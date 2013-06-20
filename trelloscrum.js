@@ -19,7 +19,7 @@
 */
 
 //default story point picker sequence
-var _pointSeq = [1, 2, 4, 8, 16];
+var _pointSeq = [];
 //attributes representing points values for card
 var _pointsAttr = ['cpoints', 'points'];
 
@@ -34,22 +34,25 @@ function round(_val) {return (Math.floor(_val * 100) / 100)};
 
 //what to do when DOM loads
 $(function(){
-	//watch filtering
-	function updateFilters() {
-		setTimeout(calcListPoints);
-	};
-	$('.js-toggle-label-filter, .js-select-member, .js-due-filter, .js-clear-all').live('mouseup', updateFilters);
-	$('.js-input').live('keyup', updateFilters);
+	chrome.extension.sendRequest({method: "getPointValues"}, function(response) {
+  		_pointSeq = JSON.parse(response.pointValues);
 
-	//for storypoint picker
-	$(".card-detail-title .edit-controls").live('DOMNodeInserted',showPointPicker);
+  		//watch filtering
+		function updateFilters() {
+			setTimeout(calcListPoints);
+		};
+		$('.js-toggle-label-filter, .js-select-member, .js-due-filter, .js-clear-all').live('mouseup', updateFilters);
+		$('.js-input').live('keyup', updateFilters);
 
-	$('.js-share').live('mouseup',function(){
-		setTimeout(checkExport,500)
+		//for storypoint picker
+		$(".card-detail-title .edit-controls").live('DOMNodeInserted',showPointPicker);
+
+		$('.js-share').live('mouseup',function(){
+			setTimeout(checkExport,500)
+		});
+
+		calcListPoints();
 	});
-
-	calcListPoints();
-
 });
 
 document.body.addEventListener('DOMNodeInserted',function(e){
