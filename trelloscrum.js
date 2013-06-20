@@ -36,7 +36,7 @@ function round(_val) {return (Math.floor(_val * 100) / 100)};
 $(function(){
 	chrome.extension.sendRequest({method: "getPointValues"}, function(response) {
   		_pointSeq = JSON.parse(response.pointValues);
-
+  		console.log(_pointSeq);
   		//watch filtering
 		function updateFilters() {
 			setTimeout(calcListPoints);

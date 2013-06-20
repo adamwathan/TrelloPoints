@@ -7,4 +7,8 @@ $(function() {
     var lines = text.split(",");
     localStorage["point_values"] = JSON.stringify(lines);
   });
+
+  var pointValues = JSON.parse(localStorage["point_values"]);
+
+  $("#point-values").val(pointValues.join());
 });
