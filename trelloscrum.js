@@ -30,18 +30,18 @@ var reg = /((?:^|\s))\((\x3f|\d*\.?\d+)(\))\s?/m, //parse regexp- accepts digits
 	iconUrl = chrome.extension.getURL('images/storypoints-icon.png'),
 	pointsDoneUrl = chrome.extension.getURL('images/points-done.png');
 
-function round(_val) {return (Math.floor(_val * 100) / 100)};
+	function round(_val) {return (Math.floor(_val * 100) / 100)};
 
 //what to do when DOM loads
 $(function(){
 	chrome.extension.sendRequest({method: "getPointValues"}, function(response) {
-  		_pointSeq = JSON.parse(response.pointValues);
+		_pointSeq = JSON.parse(response.pointValues);
   		//watch filtering
-		function updateFilters() {
-			setTimeout(calcListPoints);
-		};
-		$('.js-toggle-label-filter, .js-select-member, .js-due-filter, .js-clear-all').live('mouseup', updateFilters);
-		$('.js-input').live('keyup', updateFilters);
+  		function updateFilters() {
+  			setTimeout(calcListPoints);
+  		};
+  		$('.js-toggle-label-filter, .js-select-member, .js-due-filter, .js-clear-all').live('mouseup', updateFilters);
+  		$('.js-input').live('keyup', updateFilters);
 
 		//for storypoint picker
 		$(".card-detail-title .edit-controls").live('DOMNodeInserted',showPointPicker);
@@ -49,14 +49,7 @@ $(function(){
 		$(".badge").live('DOMNodeInserted', function(){
 			// Refresh card estimate when another badge is inserted
 			// This works but I don't fully understand it...
-			$('.list-card:not(.placeholder)').each(function(){
-				if(!this.listCard) for (var i in _pointsAttr) {
-					new ListCard(this,_pointsAttr[i]);
-				} else {
-					for (var i in _pointsAttr)
-						setTimeout(this.listCard[_pointsAttr[i]].refresh);
-				}
-			});
+			refreshCards();
 		});
 
 		$('.js-share').live('mouseup',function(){
@@ -77,6 +70,18 @@ document.body.addEventListener('DOMNodeInserted',function(e){
 	} 
 });
 
+
+function refreshCards(){
+	$('.list-card:not(.placeholder)').each(function(){
+		if(!this.listCard) for (var i in _pointsAttr) {
+			new ListCard(this,_pointsAttr[i]);
+		} else {
+			for (var i in _pointsAttr)
+				setTimeout(this.listCard[_pointsAttr[i]].refresh);
+		}
+	});	
+}
+
 //calculate board totals
 var ctto;
 function computeTotal(){
@@ -89,7 +94,7 @@ function computeTotal(){
 
 		for (var i in _pointsAttr){
 			var score = 0,
-				attr = _pointsAttr[i];
+			attr = _pointsAttr[i];
 			$('#board .list-total .'+attr).each(function(){
 				score+=parseFloat(this.textContent)||0;
 			});
@@ -115,10 +120,10 @@ function List(el){
 	el.list=this;
 
 	var $list=$(el),
-		$total=$('<span class="list-total">'),
-		busy = false,
-		to,
-		to2;
+	$total=$('<span class="list-total">'),
+	busy = false,
+	to,
+	to2;
 
 	function readCard($c){
 		if($c.target) $c = $($c.target).filter('.list-card:not(.placeholder)');
@@ -139,7 +144,7 @@ function List(el){
 			$total.empty().appendTo($list.find('.list-title'));
 			for (var i in _pointsAttr){
 				var score=0,
-					attr = _pointsAttr[i];
+				attr = _pointsAttr[i];
 				$list.find('.list-card:not(.placeholder):visible').each(function(){
 					if(!this.listCard) return;
 					if(!isNaN(Number(this.listCard[attr].points)))score+=Number(this.listCard[attr].points)
@@ -170,16 +175,16 @@ function ListCard(el, identifier){
 	el.listCard[identifier]=this;
 
 	var points=-1,
-		consumed=identifier!=='points',
-		regexp=consumed?regC:reg,
-		parsed,
-		that=this,
-		busy=false,
-		to,
-		to2,
-		phref='',
-		$card=$(el),
-		$badge=$('<div class="badge badge-points point-count" style="background-image: url('+iconUrl+')"/>');
+	consumed=identifier!=='points',
+	regexp=consumed?regC:reg,
+	parsed,
+	that=this,
+	busy=false,
+	to,
+	to2,
+	phref='',
+	$card=$(el),
+	$badge=$('<div class="badge badge-points point-count" style="background-image: url('+iconUrl+')"/>');
 
 	this.refresh=function(){
 		clearTimeout(to);
@@ -197,10 +202,10 @@ function ListCard(el, identifier){
 			clearTimeout(to2);
 			to2 = setTimeout(function(){
 				$badge
-					.text(that.points)
-					[(consumed?'add':'remove')+'Class']('consumed')
-					.attr({title: 'This card has '+that.points+ (consumed?' consumed':'')+' storypoint' + (that.points == 1 ? '.' : 's.')})
-					.prependTo($card.find('.badges'));
+				.text(that.points)
+				[(consumed?'add':'remove')+'Class']('consumed')
+				.attr({title: 'This card has '+that.points+ (consumed?' consumed':'')+' storypoint' + (that.points == 1 ? '.' : 's.')})
+				.prependTo($card.find('.badges'));
 
 				//only update title text and list totals once
 				if(!consumed) {
@@ -251,7 +256,7 @@ function checkExport() {
 	if(!$js_btn.length) return;
 	$js_btn.parent().after($('<li>').append(
 		$excel_btn = $('<a href="#" target="_blank" title="Open downloaded file with Excel">Excel</a>')
-			.click(showExcelExport)
+		.click(showExcelExport)
 		))
 };
 
@@ -285,13 +290,13 @@ function showExcelExport() {
 		var board_title = board_title_parsed[1];
 
 		$excel_btn
-			.text('Excel')
-			.after(
-				$excel_dl=$('<a>')
-					.attr({
-						download: board_title + '.xls',
-						href: window.URL.createObjectURL(blob)
-					})
+		.text('Excel')
+		.after(
+			$excel_dl=$('<a>')
+			.attr({
+				download: board_title + '.xls',
+				href: window.URL.createObjectURL(blob)
+			})
 			);
 
 		var evt = document.createEvent('MouseEvents');
@@ -301,6 +306,6 @@ function showExcelExport() {
 
 	});
 
-	return false
+return false
 };
 
