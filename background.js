@@ -3,10 +3,10 @@ chrome.extension.onRequest.addListener(function(request, sender, sendResponse) {
     	var pointValues = localStorage["point_values"];
 
     	if (pointValues === null) {
-    		pointValues = JSON.stringify([1,2,4,8]);
+    		pointValues = JSON.stringify([1,2,4,8,16]);
     	}
 
-      	sendResponse({pointValues: localStorage['point_values']});    	
+      	sendResponse({pointValues: pointValues});    	
     } else {
       	sendResponse({}); // snub them.
     }

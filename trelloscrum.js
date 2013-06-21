@@ -36,7 +36,6 @@ function round(_val) {return (Math.floor(_val * 100) / 100)};
 $(function(){
 	chrome.extension.sendRequest({method: "getPointValues"}, function(response) {
   		_pointSeq = JSON.parse(response.pointValues);
-  		console.log(_pointSeq);
   		//watch filtering
 		function updateFilters() {
 			setTimeout(calcListPoints);
@@ -47,6 +46,19 @@ $(function(){
 		//for storypoint picker
 		$(".card-detail-title .edit-controls").live('DOMNodeInserted',showPointPicker);
 
+		$(".badge").live('DOMNodeInserted', function(){
+			// Refresh card estimate when another badge is inserted
+			// This works but I don't fully understand it...
+			$('.list-card:not(.placeholder)').each(function(){
+				if(!this.listCard) for (var i in _pointsAttr) {
+					new ListCard(this,_pointsAttr[i]);
+				} else {
+					for (var i in _pointsAttr)
+						setTimeout(this.listCard[_pointsAttr[i]].refresh);
+				}
+			});
+		});
+
 		$('.js-share').live('mouseup',function(){
 			setTimeout(checkExport,500)
 		});
@@ -55,9 +67,14 @@ $(function(){
 	});
 });
 
+
+
 document.body.addEventListener('DOMNodeInserted',function(e){
-	if(e.target.id=='board') setTimeout(calcListPoints);
-	else if($(e.target).hasClass('board-name')) computeTotal();
+	if (e.target.id=='board') {
+		setTimeout(calcListPoints);
+	} else if ($(e.target).hasClass('board-name')) {
+		computeTotal();	
+	} 
 });
 
 //calculate board totals
@@ -84,8 +101,11 @@ function computeTotal(){
 //calculate list totals
 function calcListPoints($el){
 	($el||$('.list')).each(function(){
-		if(!this.list) new List(this);
-		else if(this.list.calc) this.list.calc();
+		if(!this.list){ 
+			new List(this);
+		} else if(this.list.calc) {
+			this.list.calc()
+		};
 	})
 };
 
@@ -103,10 +123,12 @@ function List(el){
 	function readCard($c){
 		if($c.target) $c = $($c.target).filter('.list-card:not(.placeholder)');
 		$c.each(function(){
-			if(!this.listCard) for (var i in _pointsAttr)
+			if(!this.listCard) for (var i in _pointsAttr) {
 				new ListCard(this,_pointsAttr[i]);
-			else for (var i in _pointsAttr)
-				setTimeout(this.listCard[_pointsAttr[i]].refresh);
+			} else {
+				for (var i in _pointsAttr)
+					setTimeout(this.listCard[_pointsAttr[i]].refresh);
+			}
 		});
 	};
 
